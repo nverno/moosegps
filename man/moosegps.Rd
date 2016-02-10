@@ -2,10 +2,11 @@
 % Please edit documentation in R/moosegps.R
 \name{moosegps}
 \alias{moosegps}
-\title{Packaged data for Moosilauke plot locations.  This includes location information
-for permanent plots, transects, and contours (segments), as well as some other
-assorted locations referred to as 'OTHER'.}
+\title{Packaged data for Moosilauke plot locations}
 \description{
-Cleaning scripts and raw-data are included in directories 'clean' and 'raw'.
+This includes location information
+for permanent plots, transects, and contours (segments), as well as some other
+assorted locations referred to as 'OTHER'. Cleaning scripts and raw-data are 
+included in directories 'clean' and 'raw'.
 }
 
