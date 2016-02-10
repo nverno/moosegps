@@ -1,0 +1,13 @@
+##' Moosilauke permanent plot specific information.
+##'
+##' @format An object of class \code{data.table} (inherits from
+##'   \code{data.frame}) with 27 rows and 4 columns.
+##' \itemize{
+##'   \item PID: Link to \code{location}
+##'   \item PPLOT: Permanent plot ID.
+##'   \item DEMSLOPE: Slope of permanent plots determined from DEM data.
+##'   \item LABEL: More information about a plot location.  Mostly just relevant
+##' for plots in the 'OTHER' category.
+##' }
+##'
+"permanent"

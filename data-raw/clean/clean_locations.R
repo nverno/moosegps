@@ -3,7 +3,7 @@
 ## Description: Retrieve, setup GPS files
 ## Author: Noah Peart
 ## Created: Mon Feb  8 19:28:53 2016 (-0500)
-## Last-Updated: Tue Feb  9 03:14:29 2016 (-0500)
+## Last-Updated: Tue Feb  9 18:34:30 2016 (-0500)
 ##           By: Noah Peart
 ## */
 
@@ -125,6 +125,12 @@ chek1 <- nrow(unique(cseed[,.(CONTNAM, STPACE)])[
 if (chek1 > 0L)
   stop('Missing locations for some contours plots in the seedling data')
 
+## Check if we have field sampled GPS locations for all of the 
+## contour plots with seedling data:
+## nope ->  56 interpolated
+interped_cps <- unique(cseed[, .(CONTNAM, STPACE)])[
+  !unique(cplots[!is.na(LAT), .(CONTNAM, STPACE)]), on=c('CONTNAM', 'STPACE')]
+
 ## /* end checks */
 ##'
 ##' ## Interpolated Plots
@@ -135,6 +141,8 @@ if (chek1 > 0L)
 {{prettify(ninterptp)}}
 ##' + Contour Plots:
 {{prettify(ninterpcp)}}
+##' + Contour Plots where seedling data was collected:
+{{prettify(nrow(interped_cps))}}
 ##' + Other locations:
 {{prettify(ninterpother)}}
 ##'
@@ -156,9 +164,9 @@ interp <- cplots[, .(lng=POINT_X, lat=POINT_Y, CONTNAM, STPACE,
   label=paste0(CONTNAM, '_', STPACE))]
 
 cols <- brewer.pal(3, name='Set1')
-icons1 <- makeAwesomeIcon(icon = 'flag', markerColor = cols[1],
+icons1 <- makeAwesomeIcon(icon = 'flag', markerColor = 'red',
   iconColor = 'black', library = 'fa')
-icons2 <- makeAwesomeIcon(icon = '', markerColor = cols[3],
+icons2 <- makeAwesomeIcon(icon = '', markerColor = 'lightgreen',
   iconColor = 'black', library = 'fa')
 
 ## Make some sp::SpatialLines for contours
@@ -173,17 +181,21 @@ ilines <- SpatialLines(interp[,
 mooseView <- c('lng1'=-71.7548, 'lng2'=-71.90912, 
   'lat1'=43.95909, 'lat2'=44.05786)
 mid <- c('lng'=mean(mooseView[1:2]), 'lat'=mean(mooseView[3:4]))
+sl1names <- row.names(slines)
+sl2names <- row.names(ilines)
 
 ## Make a map
 m <- leaflet(interp) %>%
   addProviderTiles("Esri.WorldTopoMap") %>%
   setView(lng=mid[1], lat=mid[2], zoom=14) %>%
   addAwesomeMarkers(lng=~lng, lat=~lat, labelOptions(opacity=0.5),
-    icon=icon.ps2, group='Interp Points', label=~lapply(label, HTML)) %>%
+    icon=icons2, group='Interp Points', label=~lapply(label, HTML)) %>%
   addAwesomeMarkers(data=ps, lng=~lng, lat=~lat, labelOptions(opacity=0.5),
-    icon=icons2, group='GPS Points', label=~lapply(label, HTML)) %>%
-  addPolylines(data=slines, group='GPS Lines', color=cols[1]) %>%   # raw data lines
-  addPolylines(data=ilines, group='Interp Lines', color=cols[3]) %>% # interpolated lines
+    icon=icons1, group='GPS Points', label=~lapply(label, HTML)) %>%
+  addPolylines(data=slines, group='GPS Lines', color=cols[1],
+    popup=sl1names) %>%   # raw data lines
+  addPolylines(data=ilines, group='Interp Lines', color=cols[3],
+    popup=paste('Interp.', sl2names)) %>% # interpolated lines
   addLegend('topright', title='Data type', colors=cols[c(1, 3)], # colors=c('red', ''), 
     labels=c('GPS', 'Interpolated'), opacity=0.8) %>%
   hideGroup('Interp Points') %>%
@@ -214,16 +226,78 @@ setnames(location, c('POINT_X', 'POINT_Y'), c('DEM_LNG', 'DEM_LAT'))
 ##' ## Demslope
 ##' Adding demslope for now, even though it's pretty worthless at our scale.
 ##+demslope
-## location <- ppdem[dat, on='PPLOT'][, c('i.LAT', 'i.LONG') := NULL]
-## setnames(location, c('POINT_X', 'POINT_Y'), c('LNG', 'LAT'))
+res <- ppdem[, .(PPLOT, DEMSLOPE)][location, on='PPLOT']
+
 ## /* end demslope */
 ##'
 
 ##'
-##' ## Transform
+##' ## Plot types
 ##'
-##' Transform to long, each plot will have a unique ID and type.
+##' Add plot type variable called `PLOT`, with values:
 ##'
-##+transform
+##' + `PERM`: Permanent Plot
+##' + `TRAN`: Transect Plot
+##' + `CONT`: Contour Plot
+##' + `OTHER`: Other
+##'
+##+plot-type
+
+res[, PLOT := ifelse(!is.na(PPLOT), 'PERM',
+  ifelse(!is.na(TRAN), 'TRAN',
+    ifelse(!is.na(CONTNAM), 'CONT', 'OTHER')))]
+
+## /* end plot-type */
+
+##'
+##' ## Result Tables
+##'
+##' Some table of plots by types and numbers of interpolated locations.
+##+result
+datatable(res[, .(
+  Total=.N, 
+  `Num Interp`=sum(!is.na(INTERP)))
+, by=PLOT], options=dtopts, caption='Table: Plots by type/Number interpolated.')
+  
+## Contours
+datatable(res[PLOT == 'CONT', .(`Num Interp`=sum(!is.na(INTERP))), by=CONTNAM],
+  options=dtopts, caption='Table: Interpolations by contour.')
+
+## Transects
+datatable(res[PLOT=='TRAN', .(`Num Interp`=sum(!is.na(INTERP))), by=TRAN],
+  options=dtopts, caption='Table: Interpolations by transect.')
+
+## /* end result */
+##'
+
+##'
+##' ## Save
+##'
+##+save
+## res <- res[order(PPLOT, TRAN, TPLOT, CONTNAM, STPACE, LABEL)]
+## res[, PID := 1:.N]
+## setcolorder(res, c(
+##   'PID', 'PLOT', 'LNG', 'LAT', 'DATE', 'INTERP', 'DEM_LNG', 'DEM_LAT', # plot-type indep.
+##   'PPLOT', 'DEMSLOPE', 'TRAN', 'TPLOT', 'CONTNAM', 'STPACE', 'LABEL'   # plot-type specific
+## ))
 
 
+## ## Outputs
+## outs <- list2env(list(
+##   allplots  = res,                                               # all locations bundled
+##   location  = res[, 
+##     .(PID, PLOT, LNG, LAT, DATE, INTERP, DEM_LNG, DEM_LAT)],     # plot-type indep.
+##   permanent = res[PLOT=='PERM', .(PID, PPLOT, DEMSLOPE, LABEL)], # permanent plots
+##   transect  = res[PLOT=='TRAN', .(PID, TRAN, TPLOT, LABEL)],     # transects
+##   contour   = res[PLOT=='CONT', .(PID, CONTNAM, STPACE, LABEL)], # contour segments
+##   other     = res[PLOT=='OTHER', .(PID, LABEL)]                  # others
+## ))
+
+## ## Save
+## dir.create('temp')
+## for (n in names(outs)) {
+##   save(list=n, file=file.path('temp', paste0(n, '.rda')),
+##     compress='bzip2', envir=outs)
+## }
+
+## /* end save */

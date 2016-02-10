@@ -3,7 +3,10 @@ Title: Packages Moosilauke GPS data
 Version: 0.0.0.9000
 Authors@R: "Noah Peart <noah.v.peart@gmail.com> [aut,cre]"
 Description: This package contains GPS data collected for Moosilauke plots.
-Depends: R (>= 3.2.3)
+Depends:
+    R (>= 3.2.3)
 License: GPL-3
 LazyData: true
-Imports: data.table
+Imports:
+    data.table
+RoxygenNote: 5.0.1
