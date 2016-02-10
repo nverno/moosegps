@@ -1,3 +1,5 @@
+##' Contour plot specific info
+##'
 ##' Moosilauke contour segment plot information to link to \code{location} data 
 ##' by \code{PID}.
 ##'

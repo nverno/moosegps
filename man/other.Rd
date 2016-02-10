@@ -3,7 +3,7 @@
 \docType{data}
 \name{other}
 \alias{other}
-\title{Moosilauke or nearby plots information in the 'OTHER' category.}
+\title{Other plot information}
 \format{An object of class \code{data.table} (inherits from
   \code{data.frame}) with 112 rows and 2 columns.
 \itemize{

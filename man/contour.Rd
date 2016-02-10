@@ -3,8 +3,7 @@
 \docType{data}
 \name{contour}
 \alias{contour}
-\title{Moosilauke contour segment plot information to link to \code{location} data 
-by \code{PID}.}
+\title{Contour plot specific info}
 \format{An object of class \code{data.table} (inherits from
   \code{data.frame}) with 512 rows and 4 columns.
 \itemize{

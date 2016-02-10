@@ -3,12 +3,7 @@
 \docType{data}
 \name{allplots}
 \alias{allplots}
-\title{Location data for Moosilauke plots of all types bundled together.  This includes
-locations for permanent plots, transect plots, contour segment plots, and other
-assorted plots.  Some of the transect and contour plot locations were interpolated
-where field GPS data wasn't available.  This dataset also includes the variables
-specific to each of the plot types.  So, it is all the other datasets bundled into 
-one.}
+\title{Location data for Moosilauke plots and plot-type information bundled together.}
 \format{An object of class \code{data.table} (inherits from
   \code{data.frame}) with 888 rows and 15 columns.
 \itemize{

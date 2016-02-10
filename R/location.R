@@ -1,3 +1,5 @@
+##' Location data for Moosilauke plots
+##'
 ##' Location data for Moosilauke plots of all types bundled together.  This includes
 ##' locations for permanent plots, transect plots, contour segment plots, and other
 ##' assorted plots.  Some of the transect and contour plot locations were interpolated

@@ -1,3 +1,5 @@
+##' Other plot information
+##'
 ##' Moosilauke or nearby plots information in the 'OTHER' category.
 ##'
 ##' @format An object of class \code{data.table} (inherits from

@@ -3,12 +3,7 @@
 \docType{data}
 \name{location}
 \alias{location}
-\title{Location data for Moosilauke plots of all types bundled together.  This includes
-locations for permanent plots, transect plots, contour segment plots, and other
-assorted plots.  Some of the transect and contour plot locations were interpolated
-where field GPS data wasn't available.  It doesn't contain plot identifiers specific
-to the different plot types.  To retrieve that information, use \code{PID} to 
-access it from the accompanying datasets.}
+\title{Location data for Moosilauke plots}
 \format{An object of class \code{data.table} (inherits from
   \code{data.frame}) with 888 rows and 8 columns.
 \itemize{
