@@ -3,7 +3,7 @@
 ## Description: Retrieve, setup GPS files
 ## Author: Noah Peart
 ## Created: Mon Feb  8 19:28:53 2016 (-0500)
-## Last-Updated: Tue Feb  9 18:34:30 2016 (-0500)
+## Last-Updated: Tue Feb 16 22:22:54 2016 (-0500)
 ##           By: Noah Peart
 ## */
 
@@ -12,6 +12,8 @@
 ##' title: "Location Data"
 ##' output_format:
 ##'   html_document:
+##'     highlight: zenburn
+##'     theme: readable
 ##'     toc: true
 ##' ---
 ##'
@@ -29,6 +31,8 @@ library(sp)           # SpatialLines
 library(RColorBrewer) # brewer.pal
 source('load_raw.R')  # to pull from afs if wanted
 source('utils.R')     # 'see' and 'prettify'
+
+library(seedsub)      # nverno/seedsub for contour seedling data
 
 ## Any global options
 dtopts <- list(scrollX=TRUE)
@@ -119,7 +123,8 @@ cplots <- location[!is.na(CONTNAM), ]
 ninterpcp <- cplots[is.na(LAT), .N]  # 335 interpolated
 
 ## Check all sampled contours have a location
-load("~/work/seedlings/seedsub/data-raw/temp/cseed.rda")  # this will change
+## load("~/work/seedlings/seedsub/data-raw/temp/cseed.rda")  # now packaged
+cseed <- copy(segdata)
 chek1 <- nrow(unique(cseed[,.(CONTNAM, STPACE)])[
   !unique(cplots[,.(CONTNAM, STPACE)]), on=c('CONTNAM', 'STPACE')])
 if (chek1 > 0L)
